@@ -9,6 +9,14 @@ rowDifference (x:xs) min max
 	| min > x = rowDifference xs x max
 	| otherwise = rowDifference xs min max
 
+
+rowDiv :: [Int] -> [Int] -> Int
+rowDiv [] _ = error "No numbers divisble"
+rowDiv (x:xs) copy
+        | l == [] = rowDiv xs copy
+        | otherwise = if (x `mod` (head l)) == 0 then x `div` (head l) else (head l) `div` x
+        where l = filter (\y->(y `mod` x == 0) && (y /= x)) copy
+
 getRow :: [Int] -> Int
 getRow (x:xs) = rowDifference (x:xs) x x
 
@@ -18,6 +26,9 @@ checksum = sum.(map getRow)
 parse :: String -> [[Int]]
 parse str = map ((map read).words) (lines str)
 
-main = ((readFile "day_2_input.txt") >>= (PutStrLn.show.checksum.parse))
+solve2 :: String -> Int
+solve2 str = sum (map (\x->rowDiv x x) (parse str))
+
+main = ((readFile "day_2_input.txt") >>= (putStrLn.show.solve2))
 --main = (putStrLn.show) $ checksum (parse "5 1 9 5\n7 5 3\n2 4 6 8")
 
