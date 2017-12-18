@@ -29,6 +29,14 @@ distribute (value) (Memory tree xs n) = distribute (value-1) newMem
         where newMem = (Memory tree (Sequence.adjust (+1) n xs) ((n+1) `mod` (Sequence.length xs)))
 
 
+-- Same as run but ignores the sum
+runMem :: Memory -> Int -> Memory
+runMem mem@(Memory tree xs n) a
+        | (not.checkHash) (mem) = runMem (distribute (maximum xs) (Memory ((hash mem):tree) newxs ((maxindex+1) `mod` (Sequence.length xs)))) (a+1)
+        | otherwise = (Memory [] xs 0)
+        where (maxindex, newxs) = (fromJust (elemIndexL (maximum xs) xs), Sequence.update maxindex 0 xs)
+
+
 run :: Memory -> Int -> Int
 run mem@(Memory tree xs n) a 
         | (not.checkHash) (mem) = run (distribute (maximum xs) (Memory ((hash mem):tree) newxs ((maxindex+1) `mod` (Sequence.length xs)))) (a+1)
@@ -39,7 +47,10 @@ run mem@(Memory tree xs n) a
 solve1 :: String -> Int
 solve1 str = run (Memory [] (Sequence.fromList ((Prelude.map read) (words (head (lines str))))) 0) 0
 
-main = ((readFile "day_6_input.txt") >>= (putStrLn.show.solve1))
+solve2 :: String -> Int
+solve2 str = run (runMem (Memory [] (Sequence.fromList ((Prelude.map read) (words (head (lines str))))) 0) 0) 0
+
+main = ((readFile "day_6_input.txt") >>= (putStrLn.show.solve2))
 --main = (putStrLn.show) (run (Memory [] (Sequence.fromList [0, 2, 7, 0]) 0) 0)
 --main = (putStrLn.show) $ hash (Memory [] (Sequence.fromList [0, 2, 7, 0]) 1)
 
