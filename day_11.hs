@@ -3,6 +3,8 @@
 
 {-# LANGUAGE ViewPatterns #-}
 
+import Data.List
+
 data NSDir = N | S deriving (Eq, Show)
 
 data EWDir = E | W deriving (Eq, Show)
@@ -100,14 +102,15 @@ reduceList a
 solve1 :: String -> Int
 solve1 = (length.reduceList.parseHex)
 
-makeList :: [HexDir] -> [Int]
-makeList a@(_:xs) = (length (reduceList a)):(makeList xs)
-makeList [] = []
+makeList :: [HexDir] -> [HexDir] -> [Int]
+makeList copy (x:xs) = (length newList):(makeList newList xs)
+        where newList = (reverse (reduceList (x:(reverse (copy)))))
+makeList _ [] = []
 
 solve2 :: String -> Int
-solve2 = (maximum.makeList.parseHex)
+solve2 str = maximum (map (length.reduceList) (tails (parseHex str)))
+--solve2 = (maximum.(makeList []).parseHex)
 
-
-main = ((readFile "day_11_input.txt") >>= (putStrLn.show.solve1))
+main = ((readFile "day_11_input.txt") >>= (putStrLn.show.solve2))
 --main = (putStrLn.show) (solve2 "ne,ne,sw,sw")
 
