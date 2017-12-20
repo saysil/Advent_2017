@@ -18,10 +18,10 @@ walk East  (sq, (x, y), dir) = (sq, (x+1, y), East)
 walk West  (sq, (x, y), dir) = (sq, (x-1, y), West)
 
 crossWalk :: Direction -> Board -> [Board]
-crossWalk North b = map ($b) (map walk [South, East, West])
-crossWalk South b = map ($b) (map walk [North, East, West])
-crossWalk East b  = map ($b) (map walk [North, South, West])
-crossWalk West b  = map ($b) (map walk [North, South, East])
+crossWalk North b = map ($b) (map walk [East, West])
+crossWalk South b = map ($b) (map walk [East, West])
+crossWalk East b  = map ($b) (map walk [North, South])
+crossWalk West b  = map ($b) (map walk [North, South])
 
 walkPath :: Board -> [Char]
 walkPath board@(squares, (x, y), dir) = case join ((S.lookup y squares) >>= (S.lookup x)) of
