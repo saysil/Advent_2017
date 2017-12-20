@@ -17,11 +17,14 @@ walk South (sq, (x, y), dir) = (sq, (x, y+1), South)
 walk East  (sq, (x, y), dir) = (sq, (x+1, y), East)
 walk West  (sq, (x, y), dir) = (sq, (x-1, y), West)
 
+specialWalk :: Direction -> Board -> [Board]
+specialWalk
+
 crossWalk :: Direction -> Board -> [Board]
-crossWalk North b = map ($b) (map walk [South, East, West])
-crossWalk South b = map ($b) (map walk [North, East, West])
-crossWalk East b  = map ($b) (map walk [North, South, West])
-crossWalk West b  = map ($b) (map walk [North, South, East])
+crossWalk North b = map ($b) (map walk [East, West])
+crossWalk South b = map ($b) (map walk [East, West])
+crossWalk East b  = map ($b) (map walk [North, South])
+crossWalk West b  = map ($b) (map walk [North, South])
 
 walkPath :: Board -> [Char]
 walkPath board@(squares, (x, y), dir) = case join ((S.lookup y squares) >>= (S.lookup x)) of
@@ -29,7 +32,7 @@ walkPath board@(squares, (x, y), dir) = case join ((S.lookup y squares) >>= (S.l
         Just VPipe -> walkPath (walk dir board)
         Just HPipe -> walkPath (walk dir board)
         Just (Letter a) -> a:(walkPath (walk dir board))
-        Just Cross -> foldl (++) [] (map walkPath (crossWalk dir board))
+        Just Cross -> foldl' (++) [] (map walkPath (crossWalk dir board))
         -- Call on all adjacent squares
 
 parseChar :: Char -> Maybe MapSquare
